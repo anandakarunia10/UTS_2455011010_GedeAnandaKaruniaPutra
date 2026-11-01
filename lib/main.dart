@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
           textTheme: GoogleFonts.poppinsTextTheme(),
           useMaterial3: true,
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         ),
         home: const HomeScreen(),
       ),
