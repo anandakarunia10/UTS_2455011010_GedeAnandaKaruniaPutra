@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'add_plant_screen.dart';
 import '../models/plant_api_model.dart';
@@ -50,7 +51,6 @@ class PlantDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hero Container Gambar Tanaman
                   Container(
                     width: double.infinity,
                     height: 240,
@@ -86,8 +86,6 @@ class PlantDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Nama Umum dan Nama Ilmiah
                   Text(
                     plant.commonName,
                     style: const TextStyle(
@@ -106,8 +104,6 @@ class PlantDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Cards Ringkasan Perawatan
                   Row(
                     children: [
                       Expanded(
@@ -146,8 +142,6 @@ class PlantDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Informasi Detail Tambahan
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -200,8 +194,6 @@ class PlantDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Tombol Tambah ke Kebunku
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             decoration: BoxDecoration(
@@ -226,7 +218,7 @@ class PlantDetailScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AddPlantScreen(
-                        plant: plant,
+                        catalogPlant: plant,
                       ),
                     ),
                   );
