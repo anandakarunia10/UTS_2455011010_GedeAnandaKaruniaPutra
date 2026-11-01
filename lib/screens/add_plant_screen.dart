@@ -27,8 +27,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   late TextEditingController _scheduleController;
   late TextEditingController _lastWateredController;
   late TextEditingController _imageController;
-  late TextEditingController _statusController;
   late TextEditingController _notesController;
+
+  late String _healthStatus;
 
   bool _isLoading = false;
 
@@ -58,13 +59,24 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
           '',
     );
 
-    _statusController = TextEditingController(
-      text: widget.plant?.healthStatus ?? 'Sehat',
+    _healthStatus = _normalizeHealthStatus(
+      widget.plant?.healthStatus ?? 'Healthy',
     );
 
     _notesController = TextEditingController(
       text: widget.plant?.notes ?? '',
     );
+  }
+
+  String _normalizeHealthStatus(String status) {
+    final normalized = status.trim().toLowerCase();
+
+    if (normalized == 'needs care' ||
+        normalized == 'perlu perhatian') {
+      return 'Needs Care';
+    }
+
+    return 'Healthy';
   }
 
   @override
@@ -73,7 +85,6 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     _scheduleController.dispose();
     _lastWateredController.dispose();
     _imageController.dispose();
-    _statusController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -100,19 +111,23 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
       waterSchedule: _scheduleController.text.trim(),
       lastWateredDate: _lastWateredController.text.trim(),
       imageUrl: _imageController.text.trim(),
-      healthStatus: _statusController.text.trim(),
+      healthStatus: _healthStatus,
       notes: _notesController.text.trim(),
     );
 
     bool success;
 
-    if (widget.plant == null || widget.plant!.id == null) {
-      success = await provider.addPlant(newPlant);
-    } else {
-      success = await provider.updatePlant(
-        widget.plant!.id!,
-        newPlant.toJson(),
-      );
+    try {
+      if (widget.plant == null || widget.plant!.id == null) {
+        success = await provider.addPlant(newPlant);
+      } else {
+        success = await provider.updatePlant(
+          widget.plant!.id!,
+          newPlant.toJson(),
+        );
+      }
+    } catch (e) {
+      success = false;
     }
 
     if (!mounted) return;
@@ -185,7 +200,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                               ? 'Nama tanaman tidak boleh kosong'
                               : null,
                     ),
+
                     const SizedBox(height: 16),
+
                     TextFormField(
                       controller: _scheduleController,
                       decoration: _inputDecoration(
@@ -197,7 +214,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                               ? 'Jadwal tidak boleh kosong'
                               : null,
                     ),
+
                     const SizedBox(height: 16),
+
                     TextFormField(
                       controller: _lastWateredController,
                       decoration: _inputDecoration(
@@ -209,7 +228,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                               ? 'Tanggal siram terakhir tidak boleh kosong'
                               : null,
                     ),
+
                     const SizedBox(height: 16),
+
                     TextFormField(
                       controller: _imageController,
                       decoration: _inputDecoration(
@@ -221,19 +242,38 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                               ? 'URL gambar tidak boleh kosong'
                               : null,
                     ),
+
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _statusController,
+
+                    // Dropdown Status Kesehatan
+                    DropdownButtonFormField<String>(
+                      initialValue: _healthStatus,
+                      isExpanded: true,
                       decoration: _inputDecoration(
                         'Status Kesehatan',
                         Icons.health_and_safety_outlined,
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty
-                              ? 'Status kesehatan tidak boleh kosong'
-                              : null,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Healthy',
+                          child: Text('Sehat'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Needs Care',
+                          child: Text('Perlu Perhatian'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _healthStatus = value;
+                          });
+                        }
+                      },
                     ),
+
                     const SizedBox(height: 16),
+
                     TextFormField(
                       controller: _notesController,
                       decoration: _inputDecoration(
@@ -244,7 +284,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 24),
+
               SizedBox(
                 height: 52,
                 child: ElevatedButton(
