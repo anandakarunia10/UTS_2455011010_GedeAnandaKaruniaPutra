@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/my_plant_provider.dart';
-import 'plant_list_screen.dart';
 import 'my_garden_screen.dart';
+import 'plant_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,26 +22,85 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryGreen = Color(0xFF88B04B);
+
     return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green.shade700,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Home',
+      backgroundColor: const Color(0xFFF4F6F2),
+      body: Stack(
+        children: [
+          // Screen Konten Utama dengan Padding Bawah agar tidak tertutup Floating Navigation Bar
+          Padding(
+            padding: const EdgeInsets.only(bottom: 80.0),
+            child: _screens[_selectedIndex],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Katalog',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_florist),
-            label: 'Kebunku',
+
+          // Floating Modern Bottom Navigation Bar
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: Container(
+              height: 66,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(35),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(0, Icons.dashboard_rounded, 'Home', primaryGreen),
+                  _buildNavItem(1, Icons.explore_rounded, 'Katalog', primaryGreen),
+                  _buildNavItem(2, Icons.local_florist_rounded, 'Kebunku', primaryGreen),
+                ],
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label, Color primaryGreen) {
+    final bool isSelected = _selectedIndex == index;
+
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? primaryGreen : Colors.transparent,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : Colors.grey.shade600,
+              size: 22,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -53,31 +112,58 @@ class DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gardenProvider = Provider.of<MyPlantProvider>(context);
+    const primaryGreen = Color(0xFF88B04B);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F6F2),
       appBar: AppBar(
-        title: const Text('PlantCare Dashboard'),
-        backgroundColor: Colors.green.shade700,
-        foregroundColor: Colors.white,
+        title: const Text(
+          'PlantCare',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        backgroundColor: const Color(0xFFF4F6F2),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              color: Colors.green.shade50,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+            // Card Profil Mahasiswa (Modern Clean Card)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(18.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.green.shade700,
-                      child: const Icon(Icons.person, color: Colors.white, size: 36),
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE8F0DC),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        color: primaryGreen,
+                        size: 32,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     const Expanded(
@@ -89,9 +175,17 @@ class DashboardView extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
                           ),
-                          Text('NIM: 2455011010 | TRPL 5A'),
+                          SizedBox(height: 4),
+                          Text(
+                            'NIM: 2455011010 | TRPL 5A',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -99,55 +193,121 @@ class DashboardView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
+
+            // Section Title
             const Text(
               'Ringkasan Kebunku',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+
+            // Cards Row: Total Tanaman & Kondisi Sehat
             Row(
               children: [
+                // Card 1: Total Tanaman
                 Expanded(
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.local_florist, color: Colors.green, size: 32),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${gardenProvider.myPlants.length}',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F0DC),
+                            shape: BoxShape.circle,
                           ),
-                          const Text('Total Tanaman'),
-                        ],
-                      ),
+                          child: const Icon(
+                            Icons.local_florist,
+                            color: primaryGreen,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          '${gardenProvider.myPlants.length}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Total Tanaman',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                const SizedBox(width: 16),
+
+                // Card 2: Kondisi Sehat
                 Expanded(
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.blue, size: 32),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${gardenProvider.myPlants.where((p) => p.healthStatus == 'Healthy').length}',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE3F2FD),
+                            shape: BoxShape.circle,
                           ),
-                          const Text('Kondisi Sehat'),
-                        ],
-                      ),
+                          child: const Icon(
+                            Icons.check_circle,
+                            color: Colors.blue,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          '${gardenProvider.myPlants.where((p) => p.healthStatus == 'Healthy').length}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Kondisi Sehat',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
