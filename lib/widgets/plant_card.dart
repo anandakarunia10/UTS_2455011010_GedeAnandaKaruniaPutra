@@ -71,7 +71,7 @@ class PlantCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing!,
+              ...?trailing == null ? null : [trailing!],
             ],
           ),
         ),
