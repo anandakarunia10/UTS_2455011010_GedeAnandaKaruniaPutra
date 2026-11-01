@@ -63,7 +63,7 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kebunku (Database)'),
+        title: const Text('Kebunku'),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
       ),

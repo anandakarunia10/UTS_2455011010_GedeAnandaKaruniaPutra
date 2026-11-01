@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(35),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -118,7 +118,7 @@ class DashboardView extends StatelessWidget {
       backgroundColor: const Color(0xFFF4F6F2),
       appBar: AppBar(
         title: const Text(
-          'PlantCare',
+          'PlantCare Dashboard',
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
@@ -142,7 +142,7 @@ class DashboardView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -218,7 +218,7 @@ class DashboardView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -270,7 +270,7 @@ class DashboardView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
