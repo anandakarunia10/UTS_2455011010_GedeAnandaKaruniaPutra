@@ -24,6 +24,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const primaryGreen = Color(0xFF6B9E3A);
+    const bgLight = Color(0xFFF6F8F5);
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlantProvider()),
@@ -33,10 +36,26 @@ class MyApp extends StatelessWidget {
         title: 'PlantCare',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          textTheme: GoogleFonts.poppinsTextTheme(),
           useMaterial3: true,
-          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+          scaffoldBackgroundColor: bgLight,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: primaryGreen,
+            primary: primaryGreen,
+            surface: Colors.white,
+          ),
+          textTheme: GoogleFonts.poppinsTextTheme(),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: bgLight,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            centerTitle: true,
+            iconTheme: IconThemeData(color: Colors.black87),
+            titleTextStyle: TextStyle(
+              color: Colors.black87,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         home: const HomeScreen(),
       ),
