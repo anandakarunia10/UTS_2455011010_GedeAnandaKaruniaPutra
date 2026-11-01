@@ -3,14 +3,14 @@ import 'package:http/http.dart' as http;
 import '../models/plant_api_model.dart';
 
 class PlantApiService {
-  // Free Demo API Key dari Perenual atau Endpoint Public
-  static const String _baseUrl = 'https://perenual.com/api/species-list?key=sk-default&page=1';
+  static const String _apiKey = 'sk-Ks066ae746817fb3520504';
+  static const String _baseUrl = 'https://perenual.com/api/species-list';
 
   Future<List<PlantApiModel>> fetchPlants({String query = ''}) async {
     try {
-      String url = _baseUrl;
+      String url = '$_baseUrl?key=$_apiKey&page=1';
       if (query.isNotEmpty) {
-        url = 'https://perenual.com/api/species-list?key=sk-default&q=$query';
+        url = '$_baseUrl?key=$_apiKey&q=$query';
       }
 
       final response = await http.get(Uri.parse(url)).timeout(
