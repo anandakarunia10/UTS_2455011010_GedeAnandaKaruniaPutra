@@ -1,3 +1,4 @@
+// Data model for local garden stored in Supabase
 class MyPlantModel {
   final String? id;
   final String studentId;
