@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'add_plant_screen.dart';
 import '../models/plant_api_model.dart';
-import '../models/my_plant_model.dart';
-import '../providers/my_plant_provider.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final PlantApiModel plant;
@@ -36,7 +34,11 @@ class PlantDetailScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.black87,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -69,7 +71,8 @@ class PlantDetailScreen extends StatelessWidget {
                           ? Image.network(
                               plant.imageUrl,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Icon(
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(
                                 Icons.local_florist_rounded,
                                 size: 80,
                                 color: primaryGreen,
@@ -84,7 +87,7 @@ class PlantDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Nama Umum & Nama Ilmiah
+                  // Nama Umum dan Nama Ilmiah
                   Text(
                     plant.commonName,
                     style: const TextStyle(
@@ -111,7 +114,9 @@ class PlantDetailScreen extends StatelessWidget {
                         child: _buildCareMetricCard(
                           icon: Icons.water_drop_rounded,
                           title: 'Penyiraman',
-                          value: plant.watering.isNotEmpty ? plant.watering : '-',
+                          value: plant.watering.isNotEmpty
+                              ? plant.watering
+                              : '-',
                           iconColor: Colors.blue.shade600,
                           bgColor: const Color(0xFFE3F2FD),
                         ),
@@ -121,7 +126,9 @@ class PlantDetailScreen extends StatelessWidget {
                         child: _buildCareMetricCard(
                           icon: Icons.wb_sunny_rounded,
                           title: 'Pencahayaan',
-                          value: plant.sunlight.isNotEmpty ? plant.sunlight : '-',
+                          value: plant.sunlight.isNotEmpty
+                              ? plant.sunlight
+                              : '-',
                           iconColor: Colors.amber.shade800,
                           bgColor: const Color(0xFFFFF8E1),
                         ),
@@ -174,12 +181,16 @@ class PlantDetailScreen extends StatelessWidget {
                         const Divider(height: 24, thickness: 0.8),
                         _buildDetailRow(
                           label: 'Kebutuhan Air',
-                          value: plant.watering.isNotEmpty ? plant.watering : 'Tidak tersedia',
+                          value: plant.watering.isNotEmpty
+                              ? plant.watering
+                              : 'Tidak tersedia',
                         ),
                         const Divider(height: 24, thickness: 0.8),
                         _buildDetailRow(
                           label: 'Sinar Matahari',
-                          value: plant.sunlight.isNotEmpty ? plant.sunlight : 'Tidak tersedia',
+                          value: plant.sunlight.isNotEmpty
+                              ? plant.sunlight
+                              : 'Tidak tersedia',
                         ),
                       ],
                     ),
@@ -190,12 +201,14 @@ class PlantDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Action Button: Tambah ke Kebunku
+          // Tombol Tambah ke Kebunku
           Container(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -209,28 +222,11 @@ class PlantDetailScreen extends StatelessWidget {
               height: 52,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  final gardenProvider = Provider.of<MyPlantProvider>(context, listen: false);
-
-                  final newMyPlant = MyPlantModel(
-                    studentId: '2455011010',
-                    plantId: plant.id,
-                    plantName: plant.commonName,
-                    waterSchedule: plant.watering,
-                    lastWateredDate: DateTime.now().toString(),
-                    imageUrl: plant.imageUrl,
-                    healthStatus: 'Healthy',
-                    notes: 'Ditambahkan dari katalog tanaman.',
-                  );
-
-                  gardenProvider.addPlant(newMyPlant);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${plant.commonName} berhasil ditambahkan ke Kebunku!'),
-                      backgroundColor: primaryGreen,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddPlantScreen(
+                        plant: plant,
                       ),
                     ),
                   );
@@ -267,7 +263,10 @@ class PlantDetailScreen extends StatelessWidget {
     required Color bgColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+      padding: const EdgeInsets.symmetric(
+        vertical: 14,
+        horizontal: 10,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -287,7 +286,11 @@ class PlantDetailScreen extends StatelessWidget {
               color: bgColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 20,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -314,7 +317,10 @@ class PlantDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow({required String label, required String value}) {
+  Widget _buildDetailRow({
+    required String label,
+    required String value,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

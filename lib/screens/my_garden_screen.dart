@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/my_plant_provider.dart';
 import '../widgets/plant_card.dart';
 import '../widgets/status_badge.dart';
@@ -22,13 +23,22 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() {
       if (!mounted) return;
-      Provider.of<MyPlantProvider>(context, listen: false).fetchMyPlants();
+
+      Provider.of<MyPlantProvider>(
+        context,
+        listen: false,
+      ).fetchMyPlants();
     });
   }
 
-  void _confirmDelete(BuildContext context, String id, String plantName) {
+  void _confirmDelete(
+    BuildContext context,
+    String id,
+    String plantName,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -54,7 +64,11 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
             height: 1.4,
           ),
         ),
-        actionsPadding: const EdgeInsets.only(right: 16, bottom: 16, left: 16),
+        actionsPadding: const EdgeInsets.only(
+          right: 16,
+          bottom: 16,
+          left: 16,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -63,11 +77,16 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
             ),
             child: const Text(
               'Batal',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           ElevatedButton(
@@ -78,30 +97,50 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
             ),
             onPressed: () async {
               Navigator.pop(ctx);
-              final provider = Provider.of<MyPlantProvider>(context, listen: false);
+
+              final provider = Provider.of<MyPlantProvider>(
+                context,
+                listen: false,
+              );
+
               final success = await provider.deletePlant(id);
+
               if (!context.mounted) return;
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  backgroundColor: success ? _primaryGreen : Colors.red.shade600,
+                  backgroundColor: success
+                      ? _primaryGreen
+                      : Colors.red.shade600,
                   content: Text(
                     success
                         ? 'Tanaman berhasil dihapus'
                         : 'Gagal menghapus tanaman',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               );
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Hapus',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -154,7 +193,11 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                   color: Colors.red.shade50,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
+                child: Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Colors.red.shade400,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -178,7 +221,10 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],
@@ -219,10 +265,14 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 12,
+      ),
       itemCount: provider.myPlants.length,
       itemBuilder: (context, index) {
         final item = provider.myPlants[index];
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Container(
@@ -240,7 +290,8 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
             clipBehavior: Clip.antiAlias,
             child: PlantCard(
               title: item.plantName,
-              subtitle: 'Jadwal: ${item.waterSchedule} | Terakhir: ${item.lastWateredDate}',
+              subtitle:
+                  'Jadwal: ${item.waterSchedule} | Terakhir: ${item.lastWateredDate}',
               imageUrl: item.imageUrl,
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -252,17 +303,26 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                     ),
                     color: Colors.white,
                     surfaceTintColor: Colors.white,
-                    icon: const Icon(Icons.more_vert, color: _textMuted),
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: _textMuted,
+                    ),
                     onSelected: (val) {
                       if (val == 'edit') {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EditPlantScreen(plant: item),
+                            builder: (context) =>
+                                EditPlantScreen(plant: item),
                           ),
                         );
-                      } else if (val == 'delete' && item.id != null) {
-                        _confirmDelete(context, item.id!, item.plantName);
+                      } else if (val == 'delete' &&
+                          item.id != null) {
+                        _confirmDelete(
+                          context,
+                          item.id!,
+                          item.plantName,
+                        );
                       }
                     },
                     itemBuilder: (ctx) => [
@@ -270,11 +330,18 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit_outlined, size: 18, color: _textDark),
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 18,
+                              color: _textDark,
+                            ),
                             SizedBox(width: 10),
                             Text(
                               'Edit',
-                              style: TextStyle(color: _textDark, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                color: _textDark,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
@@ -283,11 +350,18 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                            Icon(
+                              Icons.delete_outline,
+                              size: 18,
+                              color: Colors.red,
+                            ),
                             SizedBox(width: 10),
                             Text(
                               'Hapus',
-                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
@@ -300,7 +374,8 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditPlantScreen(plant: item),
+                    builder: (context) =>
+                        EditPlantScreen(plant: item),
                   ),
                 );
               },
