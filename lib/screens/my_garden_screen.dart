@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,7 @@ import '../providers/my_plant_provider.dart';
 import '../widgets/plant_card.dart';
 import '../widgets/status_badge.dart';
 import 'edit_plant_screen.dart';
+import 'watering_history_screen.dart';
 
 class MyGardenScreen extends StatefulWidget {
   const MyGardenScreen({super.key});
@@ -14,7 +16,6 @@ class MyGardenScreen extends StatefulWidget {
 }
 
 class _MyGardenScreenState extends State<MyGardenScreen> {
-  // Palette warna disesuaikan dengan gambar referensi UI
   static const Color _bgColor = Color(0xFFF4F6F1);
   static const Color _primaryGreen = Color(0xFF83A936);
   static const Color _textDark = Color(0xFF1C2718);
@@ -143,6 +144,17 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openWateringHistory(BuildContext context, item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WateringHistoryScreen(
+          plant: item,
+        ),
       ),
     );
   }
@@ -316,6 +328,8 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                                 EditPlantScreen(plant: item),
                           ),
                         );
+                      } else if (val == 'history') {
+                        _openWateringHistory(context, item);
                       } else if (val == 'delete' &&
                           item.id != null) {
                         _confirmDelete(
@@ -338,6 +352,26 @@ class _MyGardenScreenState extends State<MyGardenScreen> {
                             SizedBox(width: 10),
                             Text(
                               'Edit',
+                              style: TextStyle(
+                                color: _textDark,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'history',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.history,
+                              size: 18,
+                              color: _primaryGreen,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'Riwayat Penyiraman',
                               style: TextStyle(
                                 color: _textDark,
                                 fontWeight: FontWeight.w500,

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -5,12 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'providers/my_plant_provider.dart';
 import 'providers/plant_provider.dart';
+import 'providers/watering_history_provider.dart';
 import 'screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Supabase Database
   await Supabase.initialize(
     url: 'https://mxyikufyxlubldtrddbt.supabase.co',
     publishableKey: 'sb_publishable_zpAf7607-RPzjESnUxWdOQ_SzFYPrlk',
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => PlantProvider()),
         ChangeNotifierProvider(create: (_) => MyPlantProvider()),
+        ChangeNotifierProvider(
+          create: (_) => WateringHistoryProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'PlantCare',

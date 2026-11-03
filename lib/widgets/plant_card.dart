@@ -16,12 +16,54 @@ class PlantCard extends StatelessWidget {
     required this.onTap,
   });
 
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 70,
+      height: 70,
+      color: const Color(0xFFE8F0DC),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.local_florist_rounded,
+        color: Color(0xFF88B04B),
+        size: 30,
+      ),
+    );
+  }
+
+  Widget _buildPlantImage() {
+    final normalizedUrl = imageUrl.trim();
+    final uri = Uri.tryParse(normalizedUrl);
+    final isValidUrl = uri != null &&
+        (uri.scheme == 'https' || uri.scheme == 'http') &&
+        uri.host.isNotEmpty;
+
+    if (!isValidUrl) {
+      return _buildImagePlaceholder();
+    }
+
+    return Image.network(
+      normalizedUrl,
+      width: 70,
+      height: 70,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _buildImagePlaceholder();
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return _buildImagePlaceholder();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -31,18 +73,7 @@ class PlantCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  imageUrl,
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 70,
-                    height: 70,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.local_florist, color: Colors.grey),
-                  ),
-                ),
+                child: _buildPlantImage(),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -71,7 +102,7 @@ class PlantCard extends StatelessWidget {
                   ],
                 ),
               ),
-              ...?trailing == null ? null : [trailing!],
+              if (trailing != null) trailing!,
             ],
           ),
         ),

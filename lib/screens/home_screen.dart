@@ -24,6 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MyPlantProvider>().fetchMyPlants();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF88B04B);
 
@@ -144,6 +153,8 @@ class DashboardView extends StatelessWidget {
     const primaryGreen = Color(0xFF88B04B);
 
     final totalPlants = gardenProvider.myPlants.length;
+    final isInitialLoading =
+        gardenProvider.isLoading && gardenProvider.myPlants.isEmpty;
 
     final healthyPlants = gardenProvider.myPlants.where((plant) {
       final status = plant.healthStatus.trim().toLowerCase();
@@ -277,14 +288,23 @@ class DashboardView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text(
-                          '$totalPlants',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
+                        isInitialLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: primaryGreen,
+                                ),
+                              )
+                            : Text(
+                                '$totalPlants',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
                         const SizedBox(height: 4),
                         const Text(
                           'Total Tanaman',
@@ -330,14 +350,23 @@ class DashboardView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text(
-                          '$healthyPlants',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
+                        isInitialLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: primaryGreen,
+                                ),
+                              )
+                            : Text(
+                                '$healthyPlants',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
                         const SizedBox(height: 4),
                         const Text(
                           'Kondisi Sehat',
@@ -368,7 +397,7 @@ class DashboardView extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$totalPlants tanaman',
+                  isInitialLoading ? 'Memuat...' : '$totalPlants tanaman',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -380,7 +409,19 @@ class DashboardView extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            if (gardenProvider.myPlants.isEmpty)
+            if (isInitialLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 28),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF88B04B),
+                  ),
+                ),
+              )
+            else if (gardenProvider.errorMessage.isNotEmpty &&
+                gardenProvider.myPlants.isEmpty)
+              _buildLoadError(context, gardenProvider.errorMessage)
+            else if (gardenProvider.myPlants.isEmpty)
               _buildEmptyPlants()
             else
               ...gardenProvider.myPlants.map(
@@ -390,6 +431,44 @@ class DashboardView extends StatelessWidget {
             const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadError(BuildContext context, String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.wifi_off_rounded, size: 36, color: Colors.grey),
+          const SizedBox(height: 10),
+          const Text(
+            'Data tanaman gagal dimuat',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF263326),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          const SizedBox(height: 12),
+          TextButton.icon(
+            onPressed: () {
+              context.read<MyPlantProvider>().fetchMyPlants();
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Coba Lagi'),
+          ),
+        ],
       ),
     );
   }
@@ -428,17 +507,7 @@ class DashboardView extends StatelessWidget {
           // Foto Tanaman
           ClipRRect(
             borderRadius: BorderRadius.circular(14),
-            child: plant.imageUrl.isNotEmpty
-                ? Image.network(
-                    plant.imageUrl,
-                    width: 88,
-                    height: 88,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildPlantImageFallback();
-                    },
-                  )
-                : _buildPlantImageFallback(),
+            child: _buildPlantImage(plant.imageUrl),
           ),
 
           const SizedBox(width: 14),
@@ -510,6 +579,32 @@ class DashboardView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPlantImage(String imageUrl) {
+    final normalizedUrl = imageUrl.trim();
+    final uri = Uri.tryParse(normalizedUrl);
+    final isValidUrl = uri != null &&
+        (uri.scheme == 'https' || uri.scheme == 'http') &&
+        uri.host.isNotEmpty;
+
+    if (!isValidUrl) {
+      return _buildPlantImageFallback();
+    }
+
+    return Image.network(
+      normalizedUrl,
+      width: 88,
+      height: 88,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _buildPlantImageFallback();
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return _buildPlantImageFallback();
+      },
     );
   }
 
