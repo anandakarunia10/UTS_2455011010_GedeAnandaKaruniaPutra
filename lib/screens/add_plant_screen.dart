@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../services/plant_image_storage_service.dart';
 import '../providers/my_plant_provider.dart';
 import '../models/my_plant_model.dart';
 import '../models/plant_api_model.dart';
@@ -101,23 +102,31 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
       listen: false,
     );
 
-    final newPlant = MyPlantModel(
-      id: widget.plant?.id,
-      studentId: widget.plant?.studentId ?? '2455011010',
-      plantId: widget.plant?.plantId ??
-          widget.catalogPlant?.id ??
-          0,
-      plantName: _nameController.text.trim(),
-      waterSchedule: _scheduleController.text.trim(),
-      lastWateredDate: _lastWateredController.text.trim(),
-      imageUrl: _imageController.text.trim(),
-      healthStatus: _healthStatus,
-      notes: _notesController.text.trim(),
-    );
-
-    bool success;
-
     try {
+      // Simpan gambar ke Supabase Storage agar URL tidak kedaluwarsa.
+      final permanentImageUrl = await PlantImageStorageService()
+          .uploadFromUrl(
+        _imageController.text.trim(),
+        plantId: widget.plant?.plantId ??
+            widget.catalogPlant?.id ??
+            0,
+      );
+
+      final newPlant = MyPlantModel(
+        id: widget.plant?.id,
+        studentId: widget.plant?.studentId ?? '2455011010',
+        plantId: widget.plant?.plantId ??
+            widget.catalogPlant?.id ??
+            0,
+        plantName: _nameController.text.trim(),
+        waterSchedule: _scheduleController.text.trim(),
+        lastWateredDate: _lastWateredController.text.trim(),
+        imageUrl: permanentImageUrl,
+        healthStatus: _healthStatus,
+        notes: _notesController.text.trim(),
+      );
+
+      final bool success;
       if (widget.plant == null || widget.plant!.id == null) {
         success = await provider.addPlant(newPlant);
       } else {
@@ -126,22 +135,38 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
           newPlant.toJson(),
         );
       }
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              provider.errorMessage.isNotEmpty
+                  ? 'Gagal menyimpan tanaman: ${provider.errorMessage}'
+                  : 'Gagal menyimpan tanaman',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      success = false;
-    }
+      if (!mounted) return;
 
-    if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (success) {
-      Navigator.pop(context);
-    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal menyimpan tanaman'),
+        SnackBar(
+          content: Text('Gagal menyimpan gambar/data tanaman: $e'),
+          backgroundColor: Colors.red,
         ),
       );
     }

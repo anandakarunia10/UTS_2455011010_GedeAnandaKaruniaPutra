@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class PlantCard extends StatelessWidget {
@@ -102,7 +103,7 @@ class PlantCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
         ),
