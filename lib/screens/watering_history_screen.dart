@@ -37,6 +37,45 @@ class _WateringHistoryScreenState
     });
   }
 
+  Widget _buildPlantImage() {
+    final imageUrl = widget.plant.imageUrl.trim();
+    final uri = Uri.tryParse(imageUrl);
+    final isValidUrl = uri != null &&
+        (uri.scheme == 'https' || uri.scheme == 'http') &&
+        uri.host.isNotEmpty;
+
+    if (!isValidUrl) {
+      return _buildPlantImagePlaceholder();
+    }
+
+    return Image.network(
+      imageUrl,
+      width: 48,
+      height: 48,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildPlantImagePlaceholder();
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _buildPlantImagePlaceholder();
+      },
+    );
+  }
+
+  Widget _buildPlantImagePlaceholder() {
+    return Container(
+      width: 48,
+      height: 48,
+      color: const Color(0xFFE8F0DC),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.local_florist,
+        color: _primaryGreen,
+      ),
+    );
+  }
+
   String _formatDate(DateTime date) {
     final localDate = date.toLocal();
 
@@ -232,12 +271,8 @@ class _WateringHistoryScreenState
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: Color(0xFFE8F0DC),
-                            child: Icon(
-                              Icons.local_florist,
-                              color: _primaryGreen,
-                            ),
+                            ClipOval(
+                            child: _buildPlantImage(),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
